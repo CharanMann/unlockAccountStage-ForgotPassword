@@ -1,7 +1,7 @@
-# OpenAM-Unlock Account Self-service stage
+# OpenAM-Unlock Account Stage for Forgot password flow
 
-*  <br />
-* Displays Email and/or Phone number where HOTP has been sent 
+* When OpenAM Account lock policies are used then OpenAM forgot password flow doesn't unlock user account (https://bugster.forgerock.org/jira/browse/OPENAM-7776#)<br />
+* This custom stage unlocks user's account in OpenAM.
     
 Pre-requisites :
 ================
@@ -10,86 +10,53 @@ Pre-requisites :
 
 OpenAM Configuration:
 =====================
-1. Build the custom auth module by using maven. 
-2. Deploy the custom auth module. Refer instructions: *[Building and Installing Custom Authentication Modules](https://backstage.forgerock.com/docs/openam/13.5/dev-guide#build-config-sample-auth-module)*
+1. Build the custom stage by using maven. 
+2. Delete all instances of User Self-Service from all realms. 
+3. Remove existing selfService
 ```
-Register service and module: Note that for OpenAM v12 use amAuthHOTPExt-12.xml
-forgerock@openam1-12:~/openam1/tools/openam/bin$ ./ssoadm create-svc --adminid amadmin --password-file /tmp/pwd.txt --xmlfile ~/softwares/amAuthHOTPExt.xml
-forgerock@openam1-12:~/openam1/tools/openam/bin$ ./ssoadm register-auth-module --adminid amadmin --password-file /tmp/pwd.txt --authmodule com.sun.identity.authentication.modules.hotp.HOTPExt
-
-UnRegister service and module (in case module needs to be uninstalled) : 
-./ssoadm unregister-auth-module --adminid amadmin --password-file /tmp/pwd.txt --authmodule com.sun.identity.authentication.modules.hotp.HOTPExt
-./ssoadm delete-svc --adminid amadmin --password-file /tmp/pwd.txt -s sunAMAuthHOTPExtService
+./ssoadm delete-svc --adminid amadmin --password-file /tmp/pwd.txt -s selfService
 ```
-3. Configure the custom auth module. Refer instructions: *[Configuring and Testing Custom Authentication Modules](https://backstage.forgerock.com/docs/openam/13.5/dev-guide#configuring-testing-sample-auth-module)*
-4. Configure HOTPExt module with required SMTP server. Enable both SMS and EMail.
-5. Create a chain(otpChain) with (LDAP:Required, HOTPExt:Required). Set this chain as default for "Organization Authentication"
+4. Restart OpenAM
+5. Register custom selfService
+```
+./ssoadm create-svc --adminid amadmin --password-file /tmp/pwd.txt --xmlfile ~/softwares/selfServiceExt.xml
+```
+6. Restart OpenAM
+7. Add User Self-Service to specified realm and enable forgot password flow. 
   
 Testing:
 ======== 
-* Authentication testing for otpChain:
+* Unlock user
+1. Lock user by authenticating using wrong password till user is locked out.
 ```
-curl -X POST -H "Content-Type: application/json" -H "X-OpenAM-Username: testUser1" -H "X-OpenAM-Password: password" "http://openam.sample.com/openam/json/employees/authenticate"
-
+curl --request POST \
+  --url http://openam135.sample.com:8080/openam/json/authenticate \
+  --header 'content-type: application/json' \
+  --header 'x-openam-password: wrongPassword' \
+  --header 'x-openam-username: test1'
+  
 {
-  "authId": "eyAid..",
-  "template": "",
-  "stage": "HOTPExt2",
-  "header": "Please enter your One Time Password sent at Email testUser1@gmail.com and Phone: 2223334444",
-  "callbacks": [
-    {
-      "type": "PasswordCallback",
-      "output": [
-        {
-          "name": "prompt",
-          "value": "Enter OTP"
-        }
-      ],
-      "input": [
-        {
-          "name": "IDToken1",
-          "value": ""
-        }
-      ]
-    },
-    {
-      "type": "ConfirmationCallback",
-      "output": [
-        {
-          "name": "prompt",
-          "value": ""
-        },
-        {
-          "name": "messageType",
-          "value": 0
-        },
-        {
-          "name": "options",
-          "value": [
-            "Submit OTP",
-            "Request OTP"
-          ]
-        },
-        {
-          "name": "optionType",
-          "value": -1
-        },
-        {
-          "name": "defaultOption",
-          "value": 0
-        }
-      ],
-      "input": [
-        {
-          "name": "IDToken2",
-          "value": 0
-        }
-      ]
-    }
-  ]
-}
+  "code": 401,
+  "reason": "Unauthorized",
+  "message": "Authentication Failed"
+}   
 ```
-
+2. Try authentication after user is locked
+```
+curl --request POST \
+  --url http://openam135.sample.com:8080/openam/json/authenticate \
+  --header 'content-type: application/json' \
+  --header 'x-openam-password: wrongPassword' \
+  --header 'x-openam-username: test1'
+  
+{
+  "code": 401,
+  "reason": "Unauthorized",
+  "message": "Your account has been locked."
+}  
+``` 
+3. Follow forgot password flow to reset password and unlock account. 
+4. Try authenticating again with new password. This should succeed. 
 
 
 * * *
