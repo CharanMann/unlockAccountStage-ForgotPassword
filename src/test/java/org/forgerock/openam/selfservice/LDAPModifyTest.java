@@ -33,8 +33,6 @@ import org.forgerock.opendj.ldap.requests.ModifyRequest;
 import org.forgerock.opendj.ldap.responses.SearchResultEntry;
 import org.forgerock.opendj.ldif.LDIFEntryWriter;
 
-import java.util.Date;
-
 
 class LDAPModifyTest {
     public static void main(String[] args) {

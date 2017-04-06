@@ -43,10 +43,8 @@ public class SupportedControls {
     /**
      * Populate the list of supported LDAP control OIDs.
      *
-     * @param connection
-     *            Active connection to the LDAP server.
-     * @throws org.forgerock.opendj.ldap.LdapException
-     *             Failed to get list of controls.
+     * @param connection Active connection to the LDAP server.
+     * @throws org.forgerock.opendj.ldap.LdapException Failed to get list of controls.
      */
     static void loadSupportedControls(Connection connection)
             throws LdapException {
@@ -57,8 +55,7 @@ public class SupportedControls {
      * Check whether a control is supported. Call {@code loadSupportedControls}
      * first.
      *
-     * @param control
-     *            Check support for this control, provided by OID.
+     * @param control Check support for this control, provided by OID.
      * @return True if the control is supported.
      */
     static boolean isSupported(final String control) {
