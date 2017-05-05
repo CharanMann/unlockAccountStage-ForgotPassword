@@ -26,8 +26,8 @@
 
     <properties>
         <commons.version>20.1.0</commons.version>
-        <opendj.version>3.5.1</opendj.version>
         <openam.version>13.5.0</openam.version>
+        <opendj.sdk.version>2.6.11</opendj.sdk.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
@@ -72,8 +72,8 @@
         </dependency>
         <dependency>
             <groupId>org.forgerock.opendj</groupId>
-            <artifactId>opendj-core</artifactId>
-            <version>${opendj.version}</version>
+            <artifactId>opendj-ldap-sdk</artifactId>
+            <version>${opendj.sdk.version}</version>
         </dependency>
 
     </dependencies>

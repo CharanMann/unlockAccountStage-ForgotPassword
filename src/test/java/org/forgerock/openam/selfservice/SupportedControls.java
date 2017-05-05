@@ -29,7 +29,7 @@
 package org.forgerock.openam.selfservice;
 
 import org.forgerock.opendj.ldap.Connection;
-import org.forgerock.opendj.ldap.LdapException;
+import org.forgerock.opendj.ldap.ErrorResultException;
 import org.forgerock.opendj.ldap.RootDSE;
 
 import java.util.Collection;
@@ -44,10 +44,10 @@ public class SupportedControls {
      * Populate the list of supported LDAP control OIDs.
      *
      * @param connection Active connection to the LDAP server.
-     * @throws org.forgerock.opendj.ldap.LdapException Failed to get list of controls.
+     * @throws ErrorResultException Failed to get list of controls.
      */
     static void loadSupportedControls(Connection connection)
-            throws LdapException {
+            throws ErrorResultException {
         controls = RootDSE.readRootDSE(connection).getSupportedControls();
     }
 

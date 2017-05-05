@@ -35,6 +35,9 @@ import org.forgerock.opendj.ldap.requests.Requests;
 import org.forgerock.opendj.ldap.responses.SearchResultEntry;
 import org.forgerock.opendj.ldif.LDIFEntryWriter;
 
+/**
+ * Testing LDAP Proxy controls, not related to this project
+ */
 class LDAPProxiedAuthzRequestControlsTest {
     public static void main(String[] args) {
 
