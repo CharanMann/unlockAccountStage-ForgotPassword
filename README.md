@@ -29,7 +29,7 @@ Pre-requisites :
 
 OpenAM Configuration:
 =====================
-1. Build the custom stage by using maven. 
+1. Build the custom stage by using maven. Copy the custom jar under AM_HOME/webapps/openam/WEB-INF/lib directory 
 2. Delete all instances of User Self-Service from all realms. 
 3. Remove existing selfService
 ```
